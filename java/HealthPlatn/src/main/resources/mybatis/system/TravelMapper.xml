@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TravelMapper">
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into H_Travel(
+			name,	
+			typeId,	
+			typeName,	
+			joinPhone,
+			keywords
+		) values (
+			#{name},	
+			#{typeId},	
+			#{typeName},
+			#{joinPhone},
+			#{keywords}
+		)
+	  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id" >
+        	SELECT LAST_INSERT_ID() AS ID   
+      </selectKey>
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="pd">
+		update  H_Travel
+			set 
+				name = #{name},
+				typeId = #{typeId},
+				typeName = #{typeName},
+				joinPhone = #{joinPhone},
+				keywords = #{keywords}
+			where 
+				id = #{id}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="String" resultType="pd">
+		select 
+			id,
+			name,	
+			typeId,	
+			typeName,	
+			joinPhone,
+			keywords
+		from 
+			H_Travel
+		where 
+			id = #{id}
+	</select>
+	
+	<!-- 通过TypeID获取数据 -->
+	<select id="findByTypeId" parameterType="String" resultType="pd">
+		select 
+			id,
+			name,	
+			typeId,	
+			typeName,	
+			joinPhone,
+			keywords
+		from 
+			H_Travel
+		where 
+			typeId = #{id}
+	</select>
+	
+	<!-- 通过资讯id查找资讯详情 -->
+	<select id="findDetailById" parameterType="String" resultType="pd">
+		select 
+		    a.id,
+			a.name,	
+			a.typeId,	
+			a.typeName,
+			a.joinPhone,
+			a.keywords,
+			b.content
+		from 
+			H_Travel a, H_Travel_detail b
+		WHERE 
+		    a.id = b.travel_id
+		    and a.id = #{id}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		    id,
+			name,	
+			typeId,	
+			typeName,	
+			joinPhone,
+			keywords
+		from 
+			H_Travel
+		where 1=1
+		<if test="pd.typeId != null and pd.typeId != ''">
+			and typeId = #{pd.typeId}
+		</if>
+		<if test="pd.keywords != null and pd.keywords != ''"><!-- 关键词检索 -->
+			and keywords LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+		</if>
+		<if test="pd.name != null and pd.name != ''"><!-- 关键词检索 -->
+			and name LIKE CONCAT(CONCAT('%', #{pd.name}),'%')
+		</if>
+		<if test="pd.typeName != null and pd.typeName != ''"><!-- 关键词检索 -->
+			and typeName LIKE CONCAT(CONCAT('%', #{pd.typeName}),'%')
+		</if>
+	</select>
+	
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from H_Travel
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="Integer">
+		delete from H_Travel
+		where 
+			id = #{id}
+	</delete>
+	
+</mapper>

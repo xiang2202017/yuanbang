@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phoneSendNumMapper">
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into h_phone_sendnum
+		( phone, sendnum, createTime)
+		values
+		(#{phone},#{sendnum},#{createTime})
+	</insert>
+	
+	<update id="update" parameterType="pd">
+		update h_phone_sendnum
+		set sendnum = #{sendnum},
+			createTime = #{createTime}		
+		where 
+			phone = #{phone}
+	</update>
+	
+	<select id="findbyphone" parameterType="String" resultType="pd">
+		select 
+			id,phone,sendnum,createTime 
+		from h_phone_sendnum
+		where phone = #{phone}
+	</select>
+	
+	<delete id="delete" parameterType="String">
+		delete from h_phone_sendnum
+		where phone = #{phone}
+	</delete>
+
+</mapper>

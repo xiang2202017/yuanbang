@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="NewsMapper">
+	
+	<resultMap type="News" id="NewsResultMap">
+		<id column="ID" property="id"/>
+		<result column="TITLE" property="title"/>
+		<result column="KEYWORDS" property="keywords"/>
+		<result column="IMGPATH" property="imgPath"/>
+		<result column="TYPE" property="type"/>
+		<result column="CREATIME" property="creatime"/>
+		<result column="EDITIME" property="editime"/>
+		<result column="AUTHOR" property="author"/>
+		<result column="CREATOR" property="creator"/>
+		<result column="EDITOR" property="editor"/>
+		<result column="CLICKNUM" property="clickNum"/>
+		<result column="CONTENT" property="content"/> 
+		<result column="REMARK" property="remark"/>
+	</resultMap>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into H_NEWS(
+			title,	
+			keywords,	
+			imgPath,	
+			type,	
+			creatime,	
+			editime,	
+			author,
+			creator,
+			editor,
+			clickNum,
+			remark
+		) values (
+			#{title},	
+			#{keywords},	
+			#{imgPath},	
+			#{type},	
+			#{creatime},	
+			#{editime},	
+			#{author},
+			#{creator},	
+			#{editor},	
+			#{clickNum},
+			#{remark}
+		)
+	  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id" >
+        	SELECT LAST_INSERT_ID() AS ID   
+      </selectKey>
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="Integer">
+		delete from H_NEWS
+		where 
+			id = #{id}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="pd">
+		update  H_NEWS
+			set 
+				title = #{title},
+				keywords = #{keywords},
+				<if test="imgPath!='' and imgPath!=null">
+				 imgPath = #{imgPath},
+				</if>
+				type = #{type},
+				editime = #{editime},
+				author = #{author},
+				editor = #{editor},
+				clickNum = #{clickNum},
+				remark = #{remark}
+			where 
+				id = #{id}
+	</update>
+	
+	<!-- 修改 -->
+	<update id="updateClickNum" parameterType="pd">
+		update  H_NEWS
+			set 
+				clickNum = #{clickNum}
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<select id="getNewsForLen" parameterType="java.util.Map" resultMap="NewsResultMap">
+		select
+			id, 
+			title,	
+			keywords,	
+			imgPath,	
+			type,	
+			creatime,	
+			editime,	
+			author,
+			creator,
+			editor,
+			clickNum,
+			remark
+		from 
+			H_NEWS
+		where 1=1 and type = #{type}
+		
+		<![CDATA[
+			order by id desc LIMIT #{fromIndex},#{toIndex}
+		]]>
+			
+	
+	</select>
+	
+	
+	<select id="getNewsForTop" parameterType="java.util.Map" resultMap="NewsResultMap">
+		select
+			id, 
+			title,	
+			keywords,	
+			imgPath,	
+			type,	
+			creatime,	
+			editime,	
+			author,
+			creator,
+			editor,
+			clickNum,
+			remark
+		from 
+			H_NEWS
+		where 1=1 and type = #{type}
+		
+		<![CDATA[
+			order by clickNum desc LIMIT 0,10
+		]]>
+			
+	
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="String" resultType="pd">
+		select 
+			id,
+			title,	
+			keywords,	
+			imgPath,	
+			type,	
+			creatime,	
+			editime,	
+			author,
+			creator,
+			editor,
+			clickNum,
+			remark
+		from 
+			H_NEWS
+		where 
+			id = #{id}
+	</select>
+	
+	<!-- 通过资讯id查找资讯详情 -->
+	<select id="findDetailById" parameterType="String" resultType="pd">
+		select 
+		    a.id,
+			a.title,	
+			a.keywords,	
+			a.imgPath,	
+			a.type,	
+			a.creatime,	
+			a.editime,	
+			a.author,
+			a.creator,
+			a.editor,
+			a.clickNum,
+			a.remark,
+			b.content
+		from 
+			H_NEWS a, h_news_detail b
+		WHERE 
+		    a.id = b.news_Id
+		    and a.id = #{id}
+	</select>
+	
+	<!-- 获取资讯id的上一条 -->
+	<select id="findDetailByPreId" parameterType="pd" resultType="pd">
+		select 
+		    a.id,
+			a.title,	
+			a.keywords,	
+			a.imgPath,	
+			a.type,	
+			a.creatime,	
+			a.editime,	
+			a.author,
+			a.creator,
+			a.editor,
+			a.clickNum,
+			a.remark,
+			b.content
+		from 
+			H_NEWS a, h_news_detail b
+		WHERE 
+		    a.id = b.news_Id
+		    and a.type = #{type}
+		     <![CDATA[
+			    and a.id < #{id}
+		     ]]>
+		     ORDER BY a.id DESC LIMIT 0,1;
+	</select>
+	
+	<!-- 获取资讯id的下一条 -->
+	<select id="findDetailByNextId" parameterType="pd" resultType="pd">
+		select 
+		    a.id,
+			a.title,	
+			a.keywords,	
+			a.imgPath,	
+			a.type,	
+			a.creatime,	
+			a.editime,	
+			a.author,
+			a.creator,
+			a.editor,
+			a.clickNum,
+			a.remark,
+			b.content
+		from 
+			H_NEWS a, h_news_detail b
+		WHERE 
+		    a.id = b.news_Id
+		    and a.type = #{type}
+		     <![CDATA[
+			    and a.id > #{id}
+		     ]]>
+		     ORDER BY a.id LIMIT 0,1;
+	</select>
+	
+	<!-- 通过查询字符串获取数据 -->
+	<select id="findList" parameterType="page" resultType="pd">
+		select 
+			id,
+			title,	
+			keywords,	
+			imgPath,	
+			type,	
+			creatime,	
+			editime,	
+			author,
+			creator,
+			editor,
+			clickNum,
+			remark
+		from 
+			H_NEWS
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+			id,
+			title,	
+			keywords,	
+			imgPath,	
+			type,	
+			creatime,	
+			editime,	
+			author,
+			creator,
+			editor,
+			clickNum,
+			remark
+		from 
+			h_news
+		where 1=1
+		<if test="pd.type != null and pd.type != ''">
+			and type = #{pd.type}
+		</if>
+		<if test="pd.keywords != null and pd.keywords != ''"><!-- 关键词检索 -->
+			and keywords LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+		</if>
+		<if test="pd.title != null and pd.title != ''"><!-- 关键词检索 -->
+			and title LIKE CONCAT(CONCAT('%', #{pd.title}),'%')
+		</if>
+		<if test="pd.author != null and pd.author != ''"><!-- 关键词检索 -->
+			and author LIKE CONCAT(CONCAT('%', #{pd.author}),'%')
+		</if>
+		<if test = "pd.fromTime != null and pd.fromTime != ''">
+		 	<![CDATA[
+		 		and
+			 	creatime >= #{pd.fromTime}
+		 	]]>
+		 </if>
+		 <if test = "pd.toTime != null and pd.toTime != ''">
+			 <![CDATA[
+		 		and
+			 	creatime <= #{pd.toTime}
+		 	]]>
+		 </if>
+		 order by creatime desc, editime desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+			title,	
+			keywords,	
+			imgPath,	
+			type,	
+			creatime,	
+			editime,	
+			author,
+			creator,
+			editor,
+			clickNum,
+			remark
+		from 
+			H_NEWS 
+		where type = #{type}
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from H_NEWS
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 批量获取 -->
+<!-- 	<select id="getAllById" parameterType="String" resultType="pd"> -->
+<!-- 		select PATH from H_NEWS -->
+<!-- 		where  -->
+<!-- 			id in -->
+<!-- 		<foreach item="item" index="index" collection="array" open="(" separator="," close=")"> -->
+<!--                  #{item} -->
+<!-- 		</foreach> -->
+<!-- 	</select> -->
+	
+	<!-- 删除图片 -->
+	<update id="delTp" parameterType="pd">
+		update  H_NEWS
+			set 
+				imgPath			= ''
+			where 
+				id = #{id}
+	</update>
+</mapper>

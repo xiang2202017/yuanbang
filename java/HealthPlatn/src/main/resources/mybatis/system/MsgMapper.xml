@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MsgMapper">
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into h_msg(
+			title,	
+			imgPath,
+			toType,
+			memberNos,
+			creatime,
+			remark,
+			creator
+		) values (
+			#{title},	
+			#{imgPath},	
+			#{toType},	
+			#{memberNos},	
+			#{creatime},
+			#{remark},
+			#{creator}
+		)
+	  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id" >
+        	SELECT LAST_INSERT_ID() AS ID   
+      </selectKey>
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="pd">
+		update  h_msg
+			set 
+				title = #{title},
+				imgPath = #{imgPath},
+				toType = #{toType},
+				memberNos = #{memberNos},
+				editor = #{editor},
+				editime = #{editime},
+				remark = #{remark}
+			where 
+				id = #{id}
+	</update>
+	
+	<!-- 通过资讯id查找资讯详情 -->
+	<select id="findDetailById" parameterType="String" resultType="pd">
+		select 
+		    a.id,
+			a.title,	
+			a.imgPath,
+			a.toType,
+			a.memberNos,
+			a.creatime,
+			a.editime,
+			a.creator,
+			a.editor,
+			a.remark,
+			b.content
+		from 
+			H_msg a, h_msg_detail b
+		WHERE 
+		    a.id = b.msg_Id
+		    and a.id = #{id}
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="String" resultType="pd">
+		select 
+			id,
+			title,	
+			imgPath,
+			toType,
+			memberNos,
+			creatime,
+			editime,
+			creator,
+			editor,
+			remark
+		from 
+			h_msg
+		where 
+			id = #{id}
+	</select>
+	
+	<!-- 通过会员ID获取数据 -->
+	<select id="findByMemberId" parameterType="String" resultType="pd">
+		select 
+			id,
+			title,	
+			imgPath,
+			toType,
+			memberNos,
+			creatime,
+			editime,
+			creator,
+			editor,
+			remark
+		from 
+			h_msg
+		where 
+			memberNos LIKE CONCAT(CONCAT('%', #{pd.memberNos}),'%')
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		    id,
+			title,	
+			imgPath,
+			toType,
+			memberNos,
+			creatime,
+			editime,
+			creator,
+			editor,
+			remark	
+		from 
+			h_msg
+		where 1=1
+		<if test="pd.toType != null and pd.toType != ''">
+			and toType = #{pd.toType}
+		</if>
+		<if test="pd.memberNos != null and pd.memberNos != ''"><!-- 关键词检索 -->
+			and memberNos LIKE CONCAT(CONCAT('%', #{pd.memberNos}),'%') 
+		</if>
+		<if test="pd.remark != null and pd.remark != ''"><!-- 关键词检索 -->
+			and remark LIKE CONCAT(CONCAT('%', #{pd.remark}),'%') 
+		</if>
+		<if test="pd.title != null and pd.title != ''"><!-- 关键词检索 -->
+			and title LIKE CONCAT(CONCAT('%', #{pd.title}),'%')
+		</if>
+		<if test="pd.creator != null and pd.creator != ''"><!-- 关键词检索 -->
+			and creator LIKE CONCAT(CONCAT('%', #{pd.creator}),'%')
+		</if>
+		<if test = "pd.fromTime != null and pd.fromTime != ''">
+		 	<![CDATA[
+		 		and
+			 	creatime >= #{pd.fromTime}
+		 	]]>
+		 </if>
+		 <if test = "pd.toTime != null and pd.toTime != ''">
+			 <![CDATA[
+		 		and
+			 	creatime <= #{pd.toTime}
+		 	]]>
+		 </if>
+		 order by creatime desc, editime desc
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPageForMember" parameterType="page" resultType="pd">
+		select
+		    id,
+			title,	
+			imgPath,
+			toType,
+			memberNos,
+			creatime,
+			editime,
+			creator,
+			editor,
+			remark	
+		from 
+			h_msg
+		where 1=1 and (toType  = 0 
+		<if test="pd.toType != null and pd.toType != ''">
+			or toType = #{pd.toType}
+		</if>
+		<if test="pd.memberNos != null and pd.memberNos != ''"><!-- 关键词检索 -->
+			or memberNos LIKE CONCAT(CONCAT('%', #{pd.memberNos}),'%') 
+		</if>
+		)
+		<if test="pd.remark != null and pd.remark != ''"><!-- 关键词检索 -->
+			and remark LIKE CONCAT(CONCAT('%', #{pd.remark}),'%') 
+		</if>
+		<if test="pd.title != null and pd.title != ''"><!-- 关键词检索 -->
+			and title LIKE CONCAT(CONCAT('%', #{pd.title}),'%')
+		</if>
+		<if test="pd.creator != null and pd.creator != ''"><!-- 关键词检索 -->
+			and creator LIKE CONCAT(CONCAT('%', #{pd.creator}),'%')
+		</if>
+		<if test = "pd.fromTime != null and pd.fromTime != ''">
+		 	<![CDATA[
+		 		and
+			 	creatime >= #{pd.fromTime}
+		 	]]>
+		 </if>
+		 <if test = "pd.toTime != null and pd.toTime != ''">
+			 <![CDATA[
+		 		and
+			 	creatime <= #{pd.toTime}
+		 	]]>
+		 </if>
+		 order by creatime desc, editime desc
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from h_msg
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="Integer">
+		delete from h_msg
+		where 
+			id = #{id}
+	</delete>
+	
+</mapper>

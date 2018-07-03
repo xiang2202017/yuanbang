@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrderMapper">
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into h_order(
+			memberId,
+			memberNo,
+			memberName,
+			orderNo,
+			orderName,
+			status,
+			money,
+			createTime,
+			payNo,
+			payType,
+			payTime,
+			payMoney,
+			logisticsMoney,
+			receiptId,
+			hasInvoice,
+			receiver,
+			receiverAddress,
+			receiverPhone,
+			logisticsNo,
+			sendTime,
+			receiveTime,
+			hasRefund,
+			`desc`) 
+		values (
+			#{memberId},
+			#{memberNo},
+			#{memberName},
+			#{orderNo},
+			#{orderName},
+			#{status},
+			#{money},
+			#{createTime},
+			#{payNo},
+			#{payType},
+			#{payTime},
+			#{payMoney},
+			#{logisticsMoney},
+			#{receiptId},
+			#{hasInvoice},
+			#{receiver},
+			#{receiverAddress},
+			#{receiverPhone},
+			#{logisticsNo},
+			#{sendTime},
+			#{receiveTime},
+			#{hasRefund},
+			#{desc}
+			)
+	  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id" >
+        	SELECT LAST_INSERT_ID() AS ID   
+      </selectKey>
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="pd">
+		update  h_order
+			<trim prefix="set" suffixOverrides=","> 
+				<if test="status !='' and status !=null">
+					status = #{status},	
+				</if>
+				<if test="payNo !='' and payNo !=null">
+					payNo = #{payNo},
+				</if>
+				<if test="payType !='' and payType !=null">
+					payType  = #{payType},
+				</if>
+				<if test="payTime !='' and payTime !=null">
+					payTime = #{payTime},
+				</if>
+				<if test="payMoney !='' and payMoney !=null">
+					payMoney = #{payMoney},
+				</if>
+				<if test="hasInvoice !='' and hasInvoice !=null">
+					hasInvoice = #{hasInvoice},
+				</if>
+				<if test="receiptId !='' and receiptId !=null">
+					receiptId= #{receiptId},
+				</if>
+				<if test="logisticsNo !='' and logisticsNo !=null">
+					logisticsNo = #{logisticsNo},
+				</if>
+				<if test="logisticsMoney !='' and logisticsMoney !=null">
+					logisticsMoney = #{logisticsMoney},
+				</if>
+				<if test="logisticsType != '' and logisticsType != null">
+					logisticsType = #{logisticsType},
+				</if>
+				<if test="sendTime !='' and sendTime !=null">
+					sendTime = #{sendTime},
+				</if>
+				<if test="receiveTime !='' and receiveTime !=null">
+					receiveTime = #{receiveTime},
+				</if>
+				<if test="hasRefund !='' and hasRefund !=null">
+					hasRefund = #{hasRefund}
+				</if>
+			</trim>
+			where 
+				id = #{id}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="String" resultType="pd">
+		select
+			id,
+			memberId,	
+			memberNo,
+			memberName,
+			orderNo,
+			orderName,
+			status,
+			money,
+			createTime,
+			payNo,
+			payType,
+			payTime,
+			payMoney,
+			hasInvoice,
+			receiptId,
+			receiver,
+			receiverAddress,
+			receiverPhone,
+			logisticsNo,
+			logisticsMoney,
+			logisticsType,
+			sendTime,
+			receiveTime,
+			hasRefund,
+			`desc`
+		from 
+			h_order
+		where 
+			id = #{id}
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findByMemberId" parameterType="String" resultType="pd">
+		select 
+			id,
+			memberId,	
+			memberNo,
+			memberName,
+			orderNo,
+			orderName,
+			status,
+			money,
+			createTime,
+			payNo,
+			payType,
+			payTime,
+			payMoney,
+			hasInvoice,
+			receiptId,
+			receiver,
+			receiverAddress,
+			receiverPhone,
+			logisticsNo,
+			logisticsMoney,
+			logisticsType,
+			sendTime,
+			receiveTime,
+			hasRefund,
+			`desc`
+		from 
+			h_order
+		where 
+			memberId = #{memberId}
+			order by createTime desc 
+			limit 0,1
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findByOrderNo" parameterType="String" resultType="pd">
+		select 
+			id,
+			memberId,	
+			memberNo,
+			memberName,
+			orderNo,
+			orderName,
+			status,
+			money,
+			createTime,
+			payNo,
+			payType,
+			payTime,
+			payMoney,
+			hasInvoice,
+			receiptId,
+			receiver,
+			receiverAddress,
+			receiverPhone,
+			logisticsNo,
+			logisticsMoney,
+			logisticsType,
+			sendTime,
+			receiveTime,
+			hasRefund,
+			`desc`
+		from 
+			h_order
+		where 
+			orderNo = #{orderNo}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		    a.id,
+			a.memberId,	
+			a.memberNo,
+			a.memberName,
+			a.orderNo,
+			a.orderName,
+			a.status,
+			a.money,
+			a.createTime,
+			a.payNo,
+			a.payType,
+			a.payTime,
+			a.payMoney,
+			a.hasInvoice,
+			a.receiptId,
+			a.receiver,
+			a.receiverAddress,
+			a.receiverPhone,
+			a.logisticsNo,
+			a.logisticsMoney,
+			a.logisticsType,
+			a.sendTime,
+			a.receiveTime,
+			a.hasRefund,
+			a.`desc`
+		from 
+			h_order a
+		where 1=1
+		<if test = "pd.createTime != null and pd.createTime != ''">
+		 	<![CDATA[
+		 		and
+			 	a.createTime >= #{pd.createTime}
+		 	]]>
+		 </if>
+		 <if test = "pd.fromTime != null and pd.fromTime != ''">
+		 	<![CDATA[
+		 		and
+			 	a.createTime >= #{pd.fromTime}
+		 	]]>
+		 </if>
+		 <if test = "pd.toTime != null and pd.toTime != ''">
+		 	<![CDATA[
+		 		and
+			 	a.createTime <= #{pd.toTime}
+		 	]]>
+		 </if>
+		<if test = "pd.receiveTime != null and pd.receiveTime != ''">
+		 	<![CDATA[
+		 		and
+			 	a.receiveTime >= #{pd.receiveTime}
+		 	]]>
+		 </if>
+		 <if test = "pd.payTime != null and pd.payTime != ''">
+		 	<![CDATA[
+		 		and
+			 	a.payTime >= #{pd.payTime}
+		 	]]>
+		 </if>
+		 <if test="pd.status != null and pd.status != ''"><!-- 关键词检索 -->
+			and a.status = #{pd.status}
+		</if>
+		<if test="pd.hasRefund != null and pd.hasRefund != ''"><!-- 关键词检索 -->
+			and a.hasRefund = #{pd.hasRefund}
+		</if>
+		<if test="pd.memberNo != null and pd.memberNo != ''"><!-- 关键词检索 -->
+			and a.memberNo = #{pd.memberNo}
+		</if>
+		<if test="pd.memberId != null and pd.memberId != ''"><!-- 关键词检索 -->
+			and a.memberId = #{pd.memberId}
+		</if>
+		<if test="pd.phone != null and pd.phone != ''"><!-- 关键词检索 -->
+			and a.phone = #{pd.phone}
+		</if>
+		<if test="pd.orderName != null and pd.orderName != ''"><!-- 关键词检索 -->
+			and a.orderName = #{pd.orderName}
+		</if>
+		<if test="pd.orderNo != null and pd.orderNo != ''"><!-- 关键词检索 -->
+			and a.orderNo = #{pd.orderNo}
+		</if>
+		order by a.payTime, a.createTime desc
+	</select>
+	
+	<!-- 查询待退货订单 -->
+	<select id="refundlistPage" parameterType="page" resultType="pd">
+		select
+		    a.id,
+			a.memberId,	
+			a.memberNo,
+			a.memberName,
+			a.orderNo,
+			a.orderName,
+			a.status,
+			a.money,
+			a.createTime,
+			a.payNo,
+			a.payType,
+			a.payTime,
+			a.payMoney,
+			a.hasInvoice,
+			a.receiptId,
+			a.receiver,
+			a.receiverAddress,
+			a.receiverPhone,
+			a.logisticsNo,
+			a.logisticsMoney,
+			a.logisticsType,
+			a.sendTime,
+			a.receiveTime,
+			a.`desc`,
+			a.hasRefund,
+			b.status as refundStatus,
+			b.orderDetailId,
+			b.orderId	
+		from 
+			h_order a, h_refund b
+		where a.id = b.orderId and a.hasRefund = 1 and (((b.status = 1 or b.status = 2 ) and (b.result is null or b.result = 2)) or b.status = 3) group BY a.id 
+		<if test = "pd.createTime != null and pd.createTime != ''">
+		 	<![CDATA[
+		 		and
+			 	a.createTime >= #{pd.createTime}
+		 	]]>
+		 </if>
+		<if test = "pd.receiveTime != null and pd.receiveTime != ''">
+		 	<![CDATA[
+		 		and
+			 	a.receiveTime >= #{pd.receiveTime}
+		 	]]>
+		 </if>
+		 <if test = "pd.payTime != null and pd.payTime != ''">
+		 	<![CDATA[
+		 		and
+			 	a.payTime >= #{pd.payTime}
+		 	]]>
+		 </if>
+		<if test="pd.memberNo != null and pd.memberNo != ''"><!-- 关键词检索 -->
+			and a.memberNo = #{pd.memberNo}
+		</if>
+		<if test="pd.memberId != null and pd.memberId != ''"><!-- 关键词检索 -->
+			and a.memberId = #{pd.memberId}
+		</if>
+		<if test="pd.phone != null and pd.phone != ''"><!-- 关键词检索 -->
+			and a.phone = #{pd.phone}
+		</if>
+		<if test="pd.orderName != null and pd.orderName != ''"><!-- 关键词检索 -->
+			and a.orderName = #{pd.orderName}
+		</if>
+		<if test="pd.orderNo != null and pd.orderNo != ''"><!-- 关键词检索 -->
+			and a.orderNo = #{pd.orderNo}
+		</if>
+		order by a.createTime, a.status asc
+	</select>
+	
+	<!-- 查询退货订单 (包括申请中的和已经完成的)-->
+	<select id="refundAllDatalistPage" parameterType="page" resultType="pd">
+		select
+		    a.id,
+			a.memberId,	
+			a.memberNo,
+			a.memberName,
+			a.orderNo,
+			a.orderName,
+			a.status,
+			a.money,
+			a.createTime,
+			a.payNo,
+			a.payType,
+			a.payTime,
+			a.payMoney,
+			a.hasInvoice,
+			a.receiptId,
+			a.receiver,
+			a.receiverAddress,
+			a.receiverPhone,
+			a.logisticsNo,
+			a.logisticsMoney,
+			a.logisticsType,
+			a.sendTime,
+			a.receiveTime,
+			a.`desc`,
+			a.hasRefund				
+		from 
+			h_order a, h_order_detail b
+		where a.id = b.orderId and b.refundId is not null
+		<if test = "pd.createTime != null and pd.createTime != ''">
+		 	<![CDATA[
+		 		and
+			 	a.createTime >= #{pd.createTime}
+		 	]]>
+		 </if>
+		<if test = "pd.receiveTime != null and pd.receiveTime != ''">
+		 	<![CDATA[
+		 		and
+			 	a.receiveTime >= #{pd.receiveTime}
+		 	]]>
+		 </if>
+		 <if test = "pd.payTime != null and pd.payTime != ''">
+		 	<![CDATA[
+		 		and
+			 	a.payTime >= #{pd.payTime}
+		 	]]>
+		 </if>
+		<if test="pd.memberNo != null and pd.memberNo != ''"><!-- 关键词检索 -->
+			and a.memberNo = #{pd.memberNo}
+		</if>
+		<if test="pd.memberId != null and pd.memberId != ''"><!-- 关键词检索 -->
+			and a.memberId = #{pd.memberId}
+		</if>
+		<if test="pd.phone != null and pd.phone != ''"><!-- 关键词检索 -->
+			and a.phone = #{pd.phone}
+		</if>
+		<if test="pd.orderName != null and pd.orderName != ''"><!-- 关键词检索 -->
+			and a.orderName = #{pd.orderName}
+		</if>
+		<if test="pd.orderNo != null and pd.orderNo != ''"><!-- 关键词检索 -->
+			and a.orderNo = #{pd.orderNo}
+		</if>
+		group by a.id order by a.createTime, a.status asc
+	</select>
+	
+	<!-- 查询退货申请订单 -->
+	<select id="fefundList" parameterType="Integer" resultType="pd">
+		select
+			b.id,			
+			b.productId,
+			b.productName,
+			b.productImg,
+			b.num,
+			b.price	
+		from 
+			h_order_detail b, h_refund c
+		where b.orderId = c.orderId and b.orderId = #{orderId} and (c.status = 1 or c.status = 2 or c.status = 3) and c.result != 2
+	</select>
+	
+	<!-- 查询订单货物详情 -->
+	<select id="getDetailist" parameterType="String" resultType="pd">
+		select
+			b.id,			
+			b.productId,
+			b.productName,
+			b.productImg,
+			b.num,
+			b.refundId,
+			b.price,
+			c.status,
+			c.result,
+			c.money,
+			c.reason,
+			c.createTime	
+		from 
+			h_order_detail b left join h_refund c
+		on b.orderId = c.orderId and b.id = c.orderDetailId where b.orderId = #{orderId}
+		order by c.createTime
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from h_order
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="Integer">
+		delete from h_order
+		where 
+			id = #{id}
+	</delete>
+	
+</mapper>

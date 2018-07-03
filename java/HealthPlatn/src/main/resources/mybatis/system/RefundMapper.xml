@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RefundMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into h_refund(
+			orderId,
+			orderNo,
+			status,
+			orderDetailId,
+			money,
+			createTime,
+			reason) 
+		values (
+			#{orderId},
+			#{orderNo},
+			#{status},
+			#{orderDetailId},
+			#{money},
+			#{createTime},
+			#{reason}
+			)
+	  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id" >
+        	SELECT LAST_INSERT_ID() AS ID   
+      </selectKey>
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="pd">
+		update  h_refund
+			<trim prefix="set" suffixOverrides=",">
+				<if test="status !='' and status !=null">
+					status = #{status},	
+				</if>
+				<if test="tradeType !='' and tradeType !=null">
+					tradeType = #{tradeType},
+				</if>
+				<if test="tradeNo !='' and tradeNo !=null">
+					tradeNo = #{tradeNo},
+				</if>
+				<if test="logisticsNo !='' and logisticsNo !=null">
+					logisticsNo = #{logisticsNo},
+				</if>					
+				<if test="sendTime !='' and sendTime !=null">
+					sendTime  = #{sendTime},
+				</if>
+				<if test="receiveTime !='' and receiveTime !=null">
+					receiveTime = #{receiveTime},
+				</if>
+				<if test="result !='' and result !=null">
+					result = #{result},
+				</if>
+				<if test="dealReason !='' and dealReason !=null">
+					dealReason = #{dealReason},
+				</if>
+				<if test="money !='' and money !=null">
+					money = #{money}
+				</if>
+			</trim>
+			where 
+				id = #{id}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="String" resultType="pd">
+		select
+			id,
+			orderId,	
+			orderNo,
+			status,
+			orderDetailId,
+			money,
+			createTime,
+			tradeType,
+			tradeNo,
+			logisticsNo,
+			sendTime,
+			receiveTime,
+			reason,
+			result,
+			dealReason
+		from 
+			h_refund
+		where 
+			id = #{id}
+	</select>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findByOrderNo" parameterType="String" resultType="pd">
+		select 
+			id,
+			orderId,	
+			orderNo,
+			status,
+			orderDetailId,
+			money,
+			createTime,
+			tradeType,
+			tradeNo,
+			logisticsNo,
+			sendTime,
+			receiveTime,
+			reason,
+			result,
+			dealReason
+		from 
+			h_refund
+		where 
+			orderNo = #{orderNo}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		    id,
+			orderId,	
+			orderNo,
+			status,
+			orderDetailId,
+			money,
+			createTime,
+			tradeType,
+			tradeNo,
+			logisticsNo,
+			sendTime,
+			receiveTime,
+			reason,
+			result,
+			dealReason	
+		from 
+			h_refund
+		where 1=1
+		<if test = "pd.createTime != null and pd.createTime != ''">
+		 	<![CDATA[
+		 		and
+			 	createTime >= #{pd.createTime}
+		 	]]>
+		 </if>
+		<if test = "pd.receiveTime != null and pd.receiveTime != ''">
+		 	<![CDATA[
+		 		and
+			 	receiveTime >= #{pd.receiveTime}
+		 	]]>
+		 </if>
+		<if test="pd.orderNo != null and pd.orderNo != ''"><!-- 关键词检索 -->
+			and orderNo = #{pd.orderNo}
+		</if>
+		<if test="pd.orderId != null and pd.orderId != ''"><!-- 关键词检索 -->
+			and orderId = #{pd.orderId}
+		</if>
+		<if test="pd.orderDetailId != null and pd.orderDetailId != ''"><!-- 关键词检索 -->
+			and orderDetailId = #{pd.orderDetailId}
+		</if>
+		<if test="pd.status != null and pd.status != ''"><!-- 关键词检索 -->
+			and status = #{pd.status}
+		</if>
+		refund by createTime
+	</select>
+	
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from h_refund
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="Integer">
+		delete from h_refund
+		where 
+			id = #{id}
+	</delete>
+	
+</mapper>

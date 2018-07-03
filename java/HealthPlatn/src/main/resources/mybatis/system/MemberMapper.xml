@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberMapper">
+	
+	<resultMap type="Member" id="MemberResultMap">
+		<id column="id" property="id"/>
+		<result column="memberNo" property="memberNo"/>
+		<result column="memberName" property="memberName"/>
+		<result column="memberType" property="memberType"/>
+		<result column="memberTypeName" property="memberTypeName"/>
+		<result column="sex" property="sex"/>
+		<result column="idcardNo" property="idcardNo"/>
+		<result column="phone" property="phone"/>
+		<result column="address" property="address"/>
+		<result column="expireDate" property="expireDate"/>
+		<result column="company" property="company"/>
+		<result column="password" property="password"/>
+		<result column="status" property="status"/>
+		<result column="createTime" property="createTime"/>
+		<result column="period" property="period"/>
+		<result column="lastLogin" property="lastLogin"/>
+		<result column="editime" property="editime"/>
+	</resultMap>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into H_MEMBER(
+			memberNo,	
+			memberName,	
+			memberType,	
+			sex,
+			idcardNo,	
+			phone,	
+			address,	
+			expireDate,
+			company,
+			password,
+			status,
+			createTime,
+			period,
+			lastLogin
+		) values (
+			#{memberNo},	
+			#{memberName},	
+			#{memberType},	
+			#{sex},	
+			#{idcardNo},
+			#{phone},	
+			#{address},
+			#{expireDate},	
+			#{company},
+			#{password},
+			#{status},
+			#{createTime},
+			#{period},
+			#{lastLogin}
+		)
+	  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id" >
+        	SELECT LAST_INSERT_ID() AS ID   
+      </selectKey>
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="pd">
+		update  H_MEMBER
+			<trim prefix="set" suffixOverrides=",">
+				memberType = #{memberType},
+				<if test="phone !='' and phone !=null">
+					phone = #{phone},
+				</if>
+				<if test="address !='' and address !=null">
+					address = #{address},
+				</if>
+				<if test="expireDate !='' and expireDate !=null">
+					expireDate = #{expireDate},
+				</if>
+				<if test="company !='' and company !=null">
+					company = #{company},
+				</if>
+				<if test="password !='' and password !=null">
+					password = #{password},
+				</if>
+				<if test="status !='' and status !=null">
+					status = #{status},
+				</if>
+				<if test="lastLogin !='' and lastLogin !=null">
+					lastLogin = #{lastLogin},
+				</if>
+				<if test="period !='' and period !=null">
+					period = #{period},
+				</if>
+				<if test="editime !='' and editime !=null">
+					editime = #{editime}
+				</if>
+				<if test="score !='' and score !=null">
+					score = #{score}
+				</if>
+				<if test="totalConsume !='' and totalConsume !=null">
+					totalConsume = #{totalConsume}
+				</if>
+			</trim>
+			where 
+				id = #{id}
+	</update>
+	
+	<!-- 根据手机查找会员 -->
+	<select id="findByPhone" parameterType="String" resultType="pd">
+		select 
+		    m.id,
+			memberNo,	
+			memberName,	
+			memberType,
+			mt.name memberTypeName,	
+			sex,	
+			idcardNo,	
+			phone,
+			address,
+			expireDate,
+			company,
+			password,
+			status,
+			createTime,
+			period,
+			lastLogin,
+			editime,
+			score,
+			totalConsume
+		from 
+			H_MEMBER m
+		left join h_member_type mt on mt.id=m.memberType
+		where 
+			m.phone = #{phone}
+	</select>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="String" resultType="pd">
+		select 
+		    m.id,
+			memberNo,	
+			memberName,	
+			memberType,
+			mt.name memberTypeName,	
+			sex,	
+			idcardNo,	
+			phone,
+			address,
+			expireDate,
+			company,
+			password,
+			status,
+			createTime,
+			period,
+			lastLogin,
+			editime,
+			score,
+			totalConsume
+		from 
+			H_MEMBER m
+		left join h_member_type mt on mt.id=m.memberType
+		where 
+			m.id = #{id}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		    m.id,
+			memberNo,	
+			password,	
+			phone,	
+			memberName,	
+			memberType,
+			mt.name memberTypeName,
+			sex,	
+			idcardNo,
+			address,
+			expireDate,
+			company,
+			status,
+			createTime,
+			period,
+			lastLogin,
+			editime,
+			totalConsume
+		from 
+			H_MEMBER m
+		left join h_member_type mt on mt.id=m.memberType
+		where 1=1
+		<if test="pd.status != null and pd.status != ''">
+			and status = #{pd.status}
+		</if>
+		<if test="pd.memberType != null and pd.memberType != ''">
+			and memberType = #{pd.memberType}
+		</if>
+		<if test="pd.phone != null and pd.phone != ''">
+			and phone = #{pd.phone}
+		</if>
+		<if test="pd.memberName != null and pd.memberName != ''"><!-- 关键词检索 -->
+			and memberName LIKE CONCAT(CONCAT('%', #{pd.memberName}),'%') 
+		</if>
+		<if test="pd.memberNo != null and pd.memberNo != ''"><!-- 关键词检索 -->
+			and memberNo = #{pd.memberNo}
+		</if>
+		<if test="pd.idcardNo != null and pd.idcardNo != ''"><!-- 关键词检索 -->
+			and idcardNo = #{pd.idcardNo}
+		</if>
+		order by createTime desc, editime desc
+	</select>
+	
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from H_MEMBER
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="Integer">
+		delete from H_MEMBER
+		where 
+			id = #{id}
+	</delete>
+	
+	<!-- 更新登录时间 -->
+	<update id="updateLastLogin" parameterType="pd" flushCache="false">
+		update H_member set 
+		lastLogin = #{lastLogin} 
+		where id = #{id}
+	</update>
+	
+	<!-- 判断用户名和密码 -->
+	<select id="getMemberInfo" parameterType="pd" resultType="pd" useCache="false"><!-- insert update delete (flushCache="true/false") -->
+		select * from H_member 
+		where 1=1
+		<if test="memberNo != null and password != null">
+	  	and	(
+		  		(memberNo = #{memberNo} and password = #{password})
+		  		or
+			  	(phone = #{memberNo} and password = #{password})
+	  		)
+		</if>
+	</select>
+	
+	<!-- 判断用户是否已注册 -->
+	<select id="getMemberInfoForUnique" parameterType="pd" resultType="pd" useCache="false"><!-- insert update delete (flushCache="true/false") -->
+		select * from H_member 
+		where 1=1
+	  	and	(
+		  		(phone = #{phone})
+		  		or
+		  		(idcardNo = #{idcardNo}) 
+	  		)
+	</select>
+	
+	<!-- 更新密码 -->
+	<update id="updatePassword" parameterType="pd" flushCache="false">
+		update H_member set 
+		password = #{password} 
+		where id = #{id}
+	</update>
+	
+	<!-- 更新手机 -->
+	<update id="updatePhone" parameterType="pd" flushCache="false">
+		update H_member set 
+		phone = #{phone} 
+		where id = #{id}
+	</update>
+	
+	<select id="getMembersInNDays" parameterType="net.sf.json.JSONObject" resultMap="MemberResultMap">
+		select * from H_member
+		where expireDate &gt;= #{now} and expireDate &lt;= #{expire}
+		<if test="type ==1 ">
+		 and id not in(SELECT memberId from h_member_renew)
+		 and id not in(SELECT memberId from h_member_cancel)
+		</if>
+	</select>
+	
+	<select id="getMembersByExpireDate" parameterType="String" resultMap="MemberResultMap">
+		select * from H_member
+		where expireDate &lt;= #{date} and status=1
+	</select>
+	
+	<update id="updateStatus" parameterType="String">
+		update H_member set 
+		status = "2"
+		where id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberJoinMapper">
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findByMemberId" parameterType="String" resultType="pd">
+		select 
+			id,
+			memberId,	
+			status,	
+			createTime,	
+			dealTime,	
+			memberNo,
+			memberName,
+			phone,
+			mail,
+			idcardNo,
+			disposeDesc,
+			message,
+			operator
+		from 
+			h_member_join
+		where 
+			memberId = #{id}
+	</select>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into h_member_join(
+			memberId,	
+			status,	
+			createTime,	
+			dealTime,	
+			memberNo,
+			memberName,
+			phone,
+			mail,
+			idcardNo,
+			disposeDesc,
+			message,
+			operator
+		) values (
+			#{memberId},	
+			#{status},	
+			#{createTime},	
+			#{dealTime},	
+			#{memberNo},
+			#{memberName},
+			#{phone},
+			#{mail},
+			#{idcardNo},
+			#{disposeDesc},
+			#{message},
+			#{operator}
+		)
+	  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id" >
+        	SELECT LAST_INSERT_ID() AS ID   
+      </selectKey>
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="pd">
+		update  h_member_join
+			set 
+				status = #{status},
+				dealTime = #{dealTime},
+				disposeDesc = #{disposeDesc},
+				operator = #{operator}
+			where 
+				id = #{id}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="String" resultType="pd">
+		select
+			id, 
+			memberId,	
+			status,	
+			createTime,	
+			dealTime,	
+			memberNo,
+			memberName,
+			phone,
+			mail,
+			idcardNo,
+			disposeDesc,
+			message,
+			operator
+		from 
+			h_member_join
+		where 
+			id = #{id}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		    id,
+			memberId,	
+			status,	
+			createTime,	
+			dealTime,	
+			memberNo,
+			memberName,
+			phone,
+			mail,
+			idcardNo,
+			disposeDesc,
+			message,
+			operator	
+		from 
+			h_member_join
+		where 1=1
+		<if test="pd.createTime != null and pd.createTime != ''">
+			and createTime = #{pd.createTime}
+		</if>
+		<if test="pd.memberNo != null and pd.memberNo != ''"><!-- 关键词检索 -->
+			and memberNo = #{pd.memberNo}
+		</if>
+		<if test="pd.memberName != null and pd.memberName != ''"><!-- 关键词检索 -->
+			and memberName LIKE CONCAT(CONCAT('%', #{pd.memberName}),'%') 
+		</if>
+		<if test="pd.typeId != null and pd.typeId != ''"><!-- 关键词检索 -->
+			<choose>
+				<when test="pd.typeId == 1">
+					and (status = 1)
+				</when>
+				<when test="pd.typeId == 2">
+					and (status = 2)
+				</when>
+				<when test="pd.typeId == 3">
+					and (status = 3)
+				</when>
+			</choose>
+		</if>
+		order by createTime
+	</select>
+	
+	<!-- 列表 -->
+	<select id="getLastList" parameterType="String" resultType="pd">
+		select
+		    id,
+			memberId,	
+			status,	
+			createTime,	
+			dealTime,	
+			memberNo,
+			memberName,
+			phone,
+			mail,
+			idcardNo,
+			disposeDesc,
+			message,
+			operator	
+		from 
+			h_member_join
+		where memberId = #{pd.memberId}
+		order by createTime desc limit 5
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from h_member_join
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="Integer">
+		delete from h_member_join
+		where 
+			id = #{id}
+	</delete>
+	
+</mapper>

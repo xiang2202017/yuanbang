@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProductMapper">
+	
+	<resultMap type="Product" id="ProductResultMap">
+		<id column="ID" property="id"/>
+		<result column="name" property="name"/>
+		<result column="leftNum" property="leftNum"/>
+		<result column="sellNum" property="sellNum"/>
+		<result column="typeId" property="typeId"/>
+		<result column="typeName" property="typeName"/>
+		<result column="imgPath" property="imgPath"/>
+		<result column="discription" property="discription"/>
+		<result column="sellerId" property="sellerId"/>
+		<result column="price" property="price"/>
+		<result column="isShop" property="isShop"/>
+		<result column="keywords" property="keywords"/>
+	</resultMap>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into H_PRODUCT(
+			name,	
+			leftNum,	
+			sellNum,	
+			typeId,	
+			typeName,	
+			imgPath,	
+			sellerId,
+			price,
+			isShop,
+			keywords,
+			points,
+			saleTime
+		) values (
+			#{name},	
+			#{leftNum},	
+			#{sellNum},	
+			#{typeId},	
+			#{typeName},
+			#{imgPath},	
+			#{sellerId},
+			#{price},	
+			#{isShop},
+			#{keywords},
+			#{points},
+			#{saleTime}
+		)
+	  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id" >
+        	SELECT LAST_INSERT_ID() AS ID   
+      </selectKey>
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="pd">
+		update  H_PRODUCT
+			set 
+				name = #{name},
+				leftNum = #{leftNum},
+				sellNum = #{sellNum},
+				typeId = #{typeId},
+				typeName = #{typeName},
+				imgPath = #{imgPath},
+				sellerId = #{sellerId},
+				price = #{price},
+				isShop = #{isShop},
+				keywords = #{keywords},
+				points = #{points},
+				saleTime = #{saleTime}
+			where 
+				id = #{id}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="String" resultType="pd">
+		select 
+			id,
+			name,	
+			leftNum,	
+			sellNum,	
+			typeId,	
+			typeName,	
+			imgPath,
+			sellerId,
+			price,
+			isShop,
+			keywords,
+			points,
+			saleTime
+		from 
+			H_PRODUCT
+		where 
+			id = #{id}
+	</select>
+	
+	<!-- 通过资讯id查找资讯详情 -->
+	<select id="findDetailById" parameterType="String" resultType="pd">
+		select 
+		    a.id,
+			a.name,	
+			a.keywords,	
+			a.imgPath,	
+			a.leftNum,	
+			a.sellNum,	
+			a.typeId,	
+			a.typeName,
+			a.sellerId,
+			a.price,
+			a.isShop,
+			a.points,
+			a.saleTime,
+			b.discription
+		from 
+			H_PRODUCT a, H_PRODUCT_detail b
+		WHERE 
+		    a.id = b.product_id
+		    and a.id = #{id}
+	</select>
+	
+	<!-- 查询畅销产品前十 -->
+	<select id="findTopProduct" resultType="pd">
+		select
+		    id,
+			name,	
+			keywords,	
+			imgPath,	
+			leftNum,	
+			sellNum,	
+			typeId,	
+			typeName,
+			sellerId,
+			price,
+			isShop,
+			points,
+			saleTime
+		from 
+			h_product
+		order by sellNum desc limit 0, 10
+	</select>
+	
+	<!-- 查询畅销产品前十 -->
+	<select id="findRelatedProduct" parameterType="pd" resultType="pd">
+		select
+		    id,
+			name,	
+			keywords,	
+			imgPath,	
+			leftNum,	
+			sellNum,	
+			typeId,	
+			typeName,
+			sellerId,
+			price,
+			isShop,
+			points,
+			saleTime
+		from 
+			h_product
+		where 1=1 
+		<if test="ids != null and ids != ''">
+			and id not in ${ids} 
+		</if>
+		<if test="typeIds != null and typeIds != ''">
+			and ${typeIds} 
+		</if>
+		order by sellNum desc limit 0, 9
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		    id,
+			name,	
+			keywords,	
+			imgPath,	
+			leftNum,	
+			sellNum,	
+			typeId,	
+			typeName,
+			sellerId,
+			price,
+			isShop,
+			points,
+			saleTime
+		from 
+			h_product
+		where 1=1
+		<if test="pd.typeId != null and pd.typeId != ''">
+			and typeId = #{pd.typeId}
+		</if>
+		<if test="pd.keywords != null and pd.keywords != ''"><!-- 关键词检索 -->
+			and keywords LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+		</if>
+		<if test="pd.name != null and pd.name != ''"><!-- 关键词检索 -->
+			and name LIKE CONCAT(CONCAT('%', #{pd.name}),'%')
+		</if>
+		<if test="pd.typeName != null and pd.typeName != ''"><!-- 关键词检索 -->
+			and typeName LIKE CONCAT(CONCAT('%', #{pd.typeName}),'%')
+		</if>
+	</select>
+	
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from H_PRODUCT
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="Integer">
+		delete from H_PRODUCT
+		where 
+			id = #{id}
+	</delete>
+	
+</mapper>

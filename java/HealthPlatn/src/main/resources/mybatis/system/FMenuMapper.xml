@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="FMenuMapper">
+
+	<resultMap type="FMenu" id="fmenuResultMap">
+		<id column="MENU_ID" property="menu_id"/>
+		<result column="MENU_NAME" property="menu_name"/>
+		<result column="MENU_URL" property="menu_url"/>
+		<result column="PARENT_ID" property="parent_id"/>
+		<result column="MENU_ORDER" property="menu_order"/>
+		<result column="MENU_ICON" property="menu_icon"/>
+		<result column="MENU_TYPE" property="menu_type"/>
+	</resultMap>
+	
+	<select id="findMaxId" parameterType="pd" resultType="pd">
+		select MAX(MENU_ID) MID FROM h_f_menu
+	</select>
+	
+	<select id="listAllParentMenu" resultMap="fmenuResultMap">
+		select * from h_f_menu 
+		where PARENT_ID = 0  and menu_type = 1 order by MENU_ORDER 
+	</select>
+	
+	<select id="listSubMenuByParentId" parameterType="Integer" resultMap="fmenuResultMap">
+		select  * from h_f_menu
+		where PARENT_ID = #{parentId} and menu_type = 1 order by MENU_ORDER 
+	</select>
+		
+	<select id="getMenuById" parameterType="pd" resultType="pd">
+		select  MENU_ID,
+		 		MENU_NAME,
+		 		MENU_URL,
+		 		PARENT_ID,
+		 		MENU_ORDER,
+		 		MENU_TYPE
+		 from h_f_menu 
+		 where MENU_ID=#{MENU_ID}
+	</select>
+	
+	<select id="getFMenuById" parameterType="Integer" resultMap="fmenuResultMap">
+		select  MENU_ID,
+		 		MENU_NAME,
+		 		MENU_URL,
+		 		PARENT_ID,
+		 		MENU_ORDER,
+		 		MENU_TYPE
+		 from h_f_menu 
+		 where MENU_ID=#{menuid}
+	</select>
+	
+	<insert id="insertMenu" parameterType="FMenu">
+		insert into h_f_menu (
+			MENU_NAME,
+			MENU_URL,
+			PARENT_ID,
+			MENU_ORDER,
+			MENU_TYPE
+		) values (
+			#{MENU_NAME},
+			#{MENU_URL},
+			#{PARENT_ID},
+			#{MENU_ORDER},
+			#{MENU_TYPE}
+		)
+	</insert>
+	
+	<update id="updateMenu" parameterType="FMenu">
+		update h_f_menu set 
+			MENU_NAME =#{MENU_NAME},
+			MENU_URL  =#{MENU_URL} ,
+			PARENT_ID =#{PARENT_ID},
+			MENU_ORDER=#{MENU_ORDER},
+			MENU_TYPE =#{MENU_TYPE}
+		where 
+			MENU_ID=#{MENU_ID}
+	</update>
+	
+	<update id="editicon" parameterType="FMenu">
+		update h_f_menu set 
+			MENU_ICON=#{MENU_ICON}
+		where MENU_ID=#{MENU_ID}
+	</update>
+	
+	<update id="editType" parameterType="FMenu">
+		update h_f_menu set 
+			MENU_TYPE=#{MENU_TYPE}
+		where PARENT_ID=#{MENU_ID}
+	</update>
+	
+	<delete id="deleteMenuById" parameterType="Integer">
+		delete from h_f_menu 
+		where MENU_ID=#{MENU_ID} 
+		or PARENT_ID=#{MENU_ID}
+	</delete>
+</mapper>

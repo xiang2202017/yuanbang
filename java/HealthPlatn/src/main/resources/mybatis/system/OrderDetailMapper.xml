@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrderDetailMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into h_order_detail(
+			orderId,
+			orderNo,
+			productId,
+			num,
+			productName,
+			productImg,
+			price,
+			refundId,
+			`desc`
+		) values (
+			#{orderId},
+			#{orderNo},
+			#{productId},
+			#{num},
+			#{productName},
+			#{productImg},
+			#{price},
+			#{refundId},
+			#{desc}
+		)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="pd">
+		update  h_order_detail
+			<trim prefix="set" suffixOverrides=","> 
+				<if test="refundId !='' and refundId !=null">
+					refundId = #{refundId},	
+				</if>
+			</trim>
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="Integer">
+		delete from h_order_detail
+		where 
+			orderId = #{id}
+	</delete>
+	
+	<!-- 批量删除用户 -->
+	<delete id="deleteAllOrder" parameterType="String" flushCache="false">
+		delete from h_order_detail
+		where 
+			orderId in
+  			 <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                  #{item}
+             </foreach>
+	</delete>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findByNo" parameterType="String" resultType="pd">
+		select
+			id, 
+			orderId,
+			orderNo,
+			productId,
+			num,
+			productName,
+			productImg,
+			price,
+			refundId,
+			`desc`
+		from 
+			h_order_detail
+		where 
+			orderId = #{id}
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="String" resultType="pd">
+		select
+			id, 
+			orderId,
+			orderNo,
+			productId,
+			num,
+			productName,
+			productImg,
+			price,
+			refundId,
+			`desc`
+		from 
+			h_order_detail
+		where 
+			id = #{id}
+	</select>
+	
+</mapper>
